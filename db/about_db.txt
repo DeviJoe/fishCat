@@ -1,0 +1,26 @@
+user - postgres
+DB - phishsites  (CREATE DATABASE phishsites; )-> ( \c phishsites)
+table1 - websites: columns1: domain (PRIMARY KEY, text), status (boolean - not null 'yes'="phishing"/'no'="not phishing"), 
+ is_phish (intenger. start from 0), is_leg (intenger. start from 0)
+
+
+CREATE TABLE IF NOT EXISTS websites (domain text PRIMARY KEY, status boolean DEFAULT FALSE, is_phish integer DEFAULT 0, is_leg integer DEFAULT 0);
+
+INSERT INTO websites (domain) VALUES ('some.site'); 
+
+ALTER TABLE websites ALTER COLUMN status SET DEFAULT FALSE;
+ALTER TABLE websites ALTER COLUMN is_phish SET DEFAULT 0;
+ALTER TABLE websites ALTER COLUMN is_leg SET DEFAULT 0;
+
+////
+was checked (boolean: not null 0 -no, 1-yes)
+if was checked:
+table2 - votes: columns2: domain (text),
+
+site_id integer PRIMARY KEY,
+
+from contextlib import closing
+
+
+def create_tables(cursor):
+    # print(f'Hi, {name}')
