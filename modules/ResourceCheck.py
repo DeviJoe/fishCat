@@ -24,25 +24,63 @@ from bs4 import BeautifulSoup
 образцы фишинговых страниц
 '''
 class ResourceCheck:
-
-	'''
-	Этот метод класса скачивает и возвращает html-данные сайта
-	'''
-	def getDataFromSite(url):
-		r = requests.get(url)
-
-		return r.text
-
-	def returnVerdictInJson():
-		
-
 	'''
 	Это основной метод, который делает все действия.
 	Из класса вызывается только он.
 	'''
 	@staticmethod
 	def Scan(url):
-		soup = BeautifulSoup(getDataFromSite(url), 'html.parser')
 
+		# Переменные, которые хранят значения, что найдено, а что нет
 
+		Credentials = False
+		PaymentFields = False
+		DeadLinks = False
+		RelatedLinks = False
 
+		# Качаем данные по юрлу, создаём объект парсера
+
+		r = requests.get(url)
+		soup = BeautifulSoup(r.text, 'html.parser')
+
+		# Находим поля для ввода
+
+		input_fields = soup.find_all('input')
+
+		if (len(input_fields) > 0):
+
+			# Проверяем, есть ли поля для ввода кредов
+
+			# Это можно как-то детализировать, но если будет время.
+			# В целом, это уже должно кое-как определять поля для кредов
+			for field in input_fields:
+				if (field['type'] == 'email' or
+					field['type'] == 'password' or
+					field['type'] == 'login'):
+					Credentials = True
+
+			# Проверяем, есть ли платежные поля
+
+			# card_number_fields = soup.find()
+			# Я пока хуй знает как
+
+			# Ищем ссылки, "прокликиваем" их
+
+			links = soup.find('a')
+
+			#if (len(links) > 0):
+			#	requests.head()
+
+			# Ищем среди ссылок похожие на входной юрл (бля, КАК?!)
+
+			# ...
+
+		# Возвращаем результат в формате json
+
+		return json.dumps({
+				"Credentials: ": Credentials,
+				"PaymentFileds: ": PaymentFileds,
+				"DeadLinks": DeadLinks,
+				"RelatedLinks": RelatedLinks,
+
+			})
