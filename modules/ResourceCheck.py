@@ -1,6 +1,8 @@
 import requests
 import json
+import difflib
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 '''
 Так, чо вообще будет происходить в этом модуле.
@@ -34,8 +36,8 @@ class ResourceCheck:
 		# Переменные, которые хранят значения, что найдено, а что нет
 
 		Credentials = False
-		PaymentFields = False
-		DeadLinks = False
+		PaymentFileds = False
+		DeadLinks = 0
 		RelatedLinks = False
 
 		# Качаем данные по юрлу, создаём объект парсера
@@ -63,14 +65,39 @@ class ResourceCheck:
 
 			# card_number_fields = soup.find()
 
-			# Ищем ссылки, "прокликиваем" их
+			# Теперь обработаем ссылки...
 
 			links = soup.find('a')
+			matchers = []
+			match_percents = []
 
-			#if (len(links) > 0):
-			#	requests.head()
+			for link in links:
+				# Ищем ссылки, "прокликиваем" их
+				breakpoint()
+				if (requests.get(link['href']) == 404):
+					DeadLinks += 1
 
-			# ...
+				# Сравниваем домен самого сайта со ссылкой
+
+				if (urlparse(link[href]).netloc != urlparse(url).netloc):
+					link_domain = urlparse(link[href]).netloc
+					site_domain = urlparse(url).netloc
+
+					matcher = difflib.SequenceMatcher(None, link_domain, site_domain).ratio()
+
+					if (matcher >= 0.70):
+						matchers.Append(str(link_domain))
+						match_percents.Append(str(matcher * 100) + "%")
+
+			if (len(matchers) > 0):
+				match_resp = {}
+
+				for x in range(0, len(matchers) - 1):
+					match_resp.Append({matchers[x], match_percents[x]})
+					pass
+
+		breakpoint()
+
 
 		# Возвращаем результат в формате json
 
