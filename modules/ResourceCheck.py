@@ -1,4 +1,5 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 
 '''
@@ -32,6 +33,9 @@ class ResourceCheck:
 
 		return r.text
 
+	def returnVerdictInJson():
+		
+
 	'''
 	Это основной метод, который делает все действия.
 	Из класса вызывается только он.
@@ -39,5 +43,6 @@ class ResourceCheck:
 	@staticmethod
 	def Scan(url):
 		soup = BeautifulSoup(getDataFromSite(url), 'html.parser')
+
 
 
