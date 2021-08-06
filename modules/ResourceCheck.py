@@ -62,7 +62,6 @@ class ResourceCheck:
 			# Проверяем, есть ли платежные поля
 
 			# card_number_fields = soup.find()
-			# Я пока хуй знает как
 
 			# Ищем ссылки, "прокликиваем" их
 
@@ -70,8 +69,6 @@ class ResourceCheck:
 
 			#if (len(links) > 0):
 			#	requests.head()
-
-			# Ищем среди ссылок похожие на входной юрл (бля, КАК?!)
 
 			# ...
 
