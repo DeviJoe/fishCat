@@ -46,6 +46,7 @@ def get_website_status(cursor, domain):
 
 
 def update_website_status(cursor, domain, new_status):
+    add_website(cursor, domain)
     status = 0
     if new_status == 'phish':
         status = 1
@@ -61,6 +62,8 @@ def add_vote(cursor, domain, vote_type):
 
 
 def get_votes(cursor, domain):
+    if get_website_status(cursor, domain) == 2:  # domain is not in DB
+        return 0, 0
     cursor.execute('SELECT is_phish FROM websites WHERE domain = %s', (domain,))
     is_phish = cursor.fetchone()[0]
     cursor.execute('SELECT is_leg FROM websites WHERE domain = %s', (domain,))
