@@ -5,6 +5,8 @@ import psycopg2
 table "websites" columns: domain, status ('t'="phishing"/'f'="not phishing". default - 'no'), 
                           is_phish (integer. start from 0), is_leg (integer. start from 0).
 """
+
+
 def create_tables(cursor):
     cursor.execute("""
                    CREATE TABLE IF NOT EXISTS websites (domain text PRIMARY KEY, status boolean DEFAULT FALSE,
@@ -13,10 +15,6 @@ def create_tables(cursor):
     cursor.execute('CREATE TABLE IF NOT EXISTS verifiers (service_name text PRIMARY KEY, link text NOT NULL)')
     cursor.execute('INSERT INTO verifiers VALUES (%s, %s) ON CONFLICT DO NOTHING', ('GOOGLE_SECURE', 'https://transparencyreport.google.com/safe-browsing/search'))
     cursor.execute('INSERT INTO verifiers VALUES (%s, %s) ON CONFLICT DO NOTHING', ('PHISHTANK', 'http://checkurl.phishtank.com/checkurl/'))
-    print('Tables created')
-    cursor.execute('SELECT * FROM verifiers')
-    for row in cursor:
-        print(row)
 
 
 def db_connect():
