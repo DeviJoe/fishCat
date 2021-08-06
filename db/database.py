@@ -2,14 +2,14 @@ import psycopg2
 
 
 """
-table "websites" columns: domain, status ('t'="phishing"/'f'="not phishing". default - 'no'), 
+table "websites" columns: domain, status ('1'="phishing"/0="not phishing"/2="not in db". default - 0), 
                           is_phish (integer. start from 0), is_leg (integer. start from 0).
 """
 
 
 def create_tables(cursor):
     cursor.execute("""
-                   CREATE TABLE IF NOT EXISTS websites (domain text PRIMARY KEY, status boolean DEFAULT FALSE,
+                   CREATE TABLE IF NOT EXISTS websites (domain text PRIMARY KEY, status integer DEFAULT 0,
                    is_phish integer DEFAULT 0, is_leg integer DEFAULT 0)
                    """)
     cursor.execute('CREATE TABLE IF NOT EXISTS verifiers (service_name text PRIMARY KEY, link text NOT NULL)')
@@ -36,21 +36,24 @@ def add_website(cursor, domain):
 
 def get_website_status(cursor, domain):
     cursor.execute('SELECT status FROM websites WHERE domain = %s', (domain,))
-    status = cursor.fetchone()[0]
-    if status:
-        return 'Phishing'
+    status = cursor.fetchone()
+    if status is None:
+        return 2  # domain + 'is not in DB'
+    elif status[0] == 1:
+        return 1  # 'Phishing'
     else:
-        return 'Legitimate'
+        return 0  # 'Legitimate'
 
 
 def update_website_status(cursor, domain, new_status):
-    status = 'no'
+    status = 0
     if new_status == 'phish':
-        status = 'yes'
+        status = 1
     cursor.execute('UPDATE websites SET status = %s WHERE domain = %s', (status, domain,))
 
 
 def add_vote(cursor, domain, vote_type):
+    add_website(cursor, domain)
     if vote_type == 'phish':
         cursor.execute('UPDATE websites SET is_phish = is_phish + 1 WHERE domain = %s', (domain,))
     else:
