@@ -5,25 +5,16 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 '''
-Так, чо вообще будет происходить в этом модуле.
 Мы скачиваем и парсим ресурсы с определённого юрла.
 
-Дальше мы проверяем, есть ли на сайте какие-то платежки. 
-По идее, для этого можно использовать регулярки (которые надо ещё составить или нагуглить)
-
-Проверяем, есть ли 3d secure (если бы я знал, что это за хрень)
-
-Проверяем, есть ли SSL-сертификат, а также, валидный ли он
+Дальше мы проверяем, есть ли на сайте какие-то поля для ввода кредов/платёжек
+(в зависимости, на что нацелен фишинговый сервис).
 
 Прокликиваем ссылки, смотрим респонс коды
 
-Чекаем переадресацию, чекаем "похожесть" названия (осталось придумать как...)
+Чекаем переадресацию, чекаем "похожесть" названия
 
 "Отчёт" возвращаем в формате json
-
-Регулярки для поиска, кстати, можно хранить в отдельном месте, например,
-выгружать их из базы данных. Это даст возможность потом добавлять
-образцы фишинговых страниц
 '''
 class ResourceCheck:
 	'''
@@ -35,76 +26,95 @@ class ResourceCheck:
 
 		# Переменные, которые хранят значения, что найдено, а что нет
 
-		Credentials = False
-		PaymentFileds = False
-		DeadLinks = 0
-		RelatedLinks = False
+		try:
+			Credentials = False
+			PaymentFileds = False
+			DeadLinks = False
+			RelatedLinks = {}
 
-		# Качаем данные по юрлу, создаём объект парсера
+			# Качаем данные по юрлу, создаём объект парсера
 
-		r = requests.get(url)
-		soup = BeautifulSoup(r.text, 'html.parser')
+			r = requests.get(url)
+			soup = BeautifulSoup(r.text, 'html.parser')
 
-		# Находим поля для ввода
+			# Находим поля для ввода
 
-		input_fields = soup.find_all('input')
+			input_fields = soup.find_all('input')
 
-		if (len(input_fields) > 0):
+			if (len(input_fields) > 0):
 
-			# Проверяем, есть ли поля для ввода кредов
+				# Проверяем, есть ли поля для ввода кредов
 
-			# Это можно как-то детализировать, но если будет время.
-			# В целом, это уже должно кое-как определять поля для кредов
-			for field in input_fields:
-				if (field['type'] == 'email' or
-					field['type'] == 'password' or
-					field['type'] == 'login'):
-					Credentials = True
+				for field in input_fields:
+					if (field['type'] == 'password' or
+						field['type'] == 'login' or
+						field['name'] == 'login' or
+						field['id'] == 'login'):
+						Credentials = True
 
-			# Проверяем, есть ли платежные поля
+				# Проверяем, есть ли платежные поля
 
-			# card_number_fields = soup.find()
+				payment_keywords = ['cvv', 'card-number', 'pay', 'номер карты', 'оплатить', 'оплатить']
 
-			# Теперь обработаем ссылки...
+				for keyword in payment_keywords:
+					for field in input_fields:
+						if (keyword in str.lower(field['name']) or
+							keyword in str.lower(field['id']) or
+							keyword in str.lower(field['value'])):
+							PaymentFileds = True
 
-			links = soup.find('a')
-			matchers = []
-			match_percents = []
+				# Теперь обработаем ссылки...
 
-			for link in links:
-				# Ищем ссылки, "прокликиваем" их
-				breakpoint()
-				if (requests.get(link['href']) == 404):
-					DeadLinks += 1
-
-				# Сравниваем домен самого сайта со ссылкой
-
-				if (urlparse(link[href]).netloc != urlparse(url).netloc):
-					link_domain = urlparse(link[href]).netloc
-					site_domain = urlparse(url).netloc
-
-					matcher = difflib.SequenceMatcher(None, link_domain, site_domain).ratio()
-
-					if (matcher >= 0.70):
-						matchers.Append(str(link_domain))
-						match_percents.Append(str(matcher * 100) + "%")
-
-			if (len(matchers) > 0):
+				links = soup.findAll('a')
+				matchers = []
+				match_percents = []
 				match_resp = {}
 
-				for x in range(0, len(matchers) - 1):
-					match_resp.Append({matchers[x], match_percents[x]})
-					pass
+				for i in range(0,len(links) - 1):
+					# Ищем ссылки, "прокликиваем" их
+					
+					try:
+						response = requests.get(links[i].get('href'))
+						if (response.status_code == 404):
+							DeadLinks += 1
+						pass
 
-		breakpoint()
+					except Exception:
+						pass
 
+					# Сравниваем домен самого сайта со ссылкой
 
-		# Возвращаем результат в формате json
+					if (urlparse(links[i].get('href')).netloc != urlparse(url).netloc):
+						link_domain = urlparse(links[i].get('href')).netloc
+						site_domain = urlparse(links[i].get(url)).netloc
 
-		return json.dumps({
-				"Credentials: ": Credentials,
-				"PaymentFileds: ": PaymentFileds,
-				"DeadLinks": DeadLinks,
-				"RelatedLinks": RelatedLinks,
+						matcher = difflib.SequenceMatcher(None, link_domain, site_domain).ratio()
 
-			})
+						if (matcher >= 0.60):
+							matchers.append(str(link_domain))
+							match_percents.append(str(matcher * 100) + "%")
+
+				if (len(matchers) > 0):
+					for x in range(0, len(matchers) - 1):
+						match_resp.update({matchers[x]: match_percents[x]})
+						pass
+
+				if match_resp:
+					RelatedLinks = match_resp
+				else:
+					RelatedLinks = {"Not found":""}
+
+			# Возвращаем результат в формате json
+
+			return json.dumps({
+					"Credentials: ": Credentials,
+					"PaymentFileds: ": PaymentFileds,
+					"DeadLinks": DeadLinks,
+					"RelatedLinks": RelatedLinks,
+
+				})
+
+			pass
+
+		except Exception as e:
+			raise e

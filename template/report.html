@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Import Google Icon Font -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <!-- Import Materialize.css -->
+        <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen, projection"/>
+
+        <!-- Import correction library -->
+        <link type="text/css" rel="stylesheet" href="css/material_correction.css" media="screen, projection"/>
+
+        <!-- Let browser know website is optimized for mobile -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <title>Fish cat</title>
+    </head>
+
+    <body>
+        <nav>
+            <div class="nav-wrapper darken-4 cyan">
+                <div class="container">
+                    <a href="/root/" class="brand-logo"><i class="material-icons">payment</i></a>
+                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+
+                    <ul class="right hide-on-med-and-down">
+                        <li><a href="/root/">Сканирование</a></li>
+                        <li class="active"><a href="/root/">Сообщить о фишинге</a></li>
+                        <li><a href="/root/">База фишинговых сайтов</a></li>
+                    </ul>
+
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="/root/">Сканирование</a></li>
+                        <li><a href="/root/">Сообщить о фишинге</a></li>
+                        <li><a href="/root/">База фишинговых сайтов</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+    <!-- Основная часть -->
+    <div class="section white">
+        <div class="container">
+            <div class="row center">
+                <h1 class="text-darken-1 cyan-text">Сообщите нам о фишинге</h1>
+
+                <div class="card-panel darken-4 hoverable">
+                    <div class="input-field col s6">
+                        <input id="name" type="text" class="validate" name="name">
+                        <label class="" for="name">Ваше имя</label>
+                    </div>
+
+                    <div class="input-field col s6">
+                        <input id="name" type="text" class="validate" name="name">
+                        <label class="" for="name">Введите URL-адрес</label>
+                    </div>
+
+                    <textarea id="textarea1" class="materialize-textarea" name="text" style="height: 46px;"></textarea>
+
+                    <a class="waves-effect waves-purple btn-large" id="send">Отправить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="parallax-container">
+        <div class="parallax">
+            <img src="images/test_back.jpg">
+        </div>
+    </div>
+
+    <!-- Footer -->
+        <footer class="page-footer darken-4 cyan">
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 m3">
+                        <h5>Разделы ресурса</h5>
+                        <ul>
+                            <li><a class="white-text" href="/root/">Сканирование</a></li>
+                            <li><a class="white-text" href="/root/">Сообщить о фишинге</a></li>
+                            <li><a class="white-text" href="/root/">База фишинговых сайтов</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col s12 m9">
+                        <h5>Fish cat</h5>
+                        <p>
+                            Fish cat – это сервис, который мы создали, чтобы выявлять опасные сайты и предупреждать о них пользователей и разработчиков. Наша цель – сделать Интернет безопаснее для всех. Мы надеемся, что публикация сведений о ситуации с вредоносном ПО будет способствовать сотрудничеству по борьбе со злоумышленниками в Интернете.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-copyright">
+                <div class="container">
+                    &copy; 2021 Igor Vernik Group
+                </div>
+            </div>
+        </footer>
+
+        <!-- Import jQuery before materialize.js -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="js/materialize.js"></script>
+        <script type="text/javascript" src="js/AliveMaterialize.js"></script>
+    </body>
+</html>

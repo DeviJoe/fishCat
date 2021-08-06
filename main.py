@@ -11,6 +11,6 @@ if __name__ == '__main__':
     # asyncio.get_event_loop().run_until_complete(sideCheck1.is_google_secure_check_fishing())
     asyncio.get_event_loop().run_until_complete(sideCheck1.whois_info_json())'''
 
-    ResourceCheck.ResourceCheck.Scan("http://vk.com")
+    reportStuff = ResourceCheck.ResourceCheck.Scan("https://payanyway.ru/info/w/ru/public/w/partnership/developers/assistant.html")
 
     pass
